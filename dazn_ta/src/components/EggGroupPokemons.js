@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Card, Image, Menu, Container, Grid, Message } from 'semantic-ui-react';
+import { Card, Image, Menu, Container, Grid, Message, Dimmer, Loader } from 'semantic-ui-react';
 
 function EggGroup({ eggGroups }) {
   const [activeItem, setActiveItem] = useState(0);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [pokemons, setPokemons] = useState([]);
 
   // eslint-disable-next-line
@@ -41,6 +42,7 @@ function EggGroup({ eggGroups }) {
   async function fetchPokemons(groupUrl) {
     setPokemons([]);
     try {
+      setLoading(true);
       const res = await fetch(groupUrl);
       const group = await res.json();
       let pokemons = group.pokemon_species.map(async (poke) => {
@@ -70,6 +72,7 @@ function EggGroup({ eggGroups }) {
       });
       return Promise.all(pokemons);
     } catch (error) {
+      setLoading(false);
       console.error(error);
       setError(error.message);
     }
@@ -77,7 +80,10 @@ function EggGroup({ eggGroups }) {
 
   function handleClick(e, group) {
     if (activeItem !== group.name) {
-      fetchPokemons(group.url).then((pokemons) => setPokemons(pokemons));
+      fetchPokemons(group.url).then((pokemons) => {
+        setPokemons(pokemons);
+        setLoading(false);
+      });
     }
     const newIndex = activeItem === group.name ? -1 : group.name;
     setActiveItem(newIndex);
@@ -116,6 +122,9 @@ function EggGroup({ eggGroups }) {
           </Grid.Column>
           <Grid.Column width={13}>
             <Container fluid>
+              <Dimmer active={loading} inverted>
+                <Loader inverted style={{top:'25%'}}>Loading</Loader>
+              </Dimmer>
               <Card.Group
                 stackable
                 itemsPerRow="3"

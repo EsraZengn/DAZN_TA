@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
-import { Search, Container, Image, Card, Grid, Header, Message } from 'semantic-ui-react';
+import {
+  Search,
+  Container,
+  Image,
+  Card,
+  Grid,
+  Header,
+  Message,
+  Dimmer,
+  Loader,
+} from 'semantic-ui-react';
 import Poke_Ball from '../Poke_Ball.svg';
 import { Link } from 'react-router-dom';
 
 function Pokemon({ pokemons, source }) {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
   const [value, setValue] = useState('');
   const [pokemon, setPokemon] = useState({});
@@ -18,6 +29,7 @@ function Pokemon({ pokemons, source }) {
 
   async function fetchPokemon(url) {
     try {
+      setLoading(true);
       const res = await fetch(url);
       const data = await res.json();
       const pokemon = {
@@ -29,7 +41,9 @@ function Pokemon({ pokemons, source }) {
         egg_groups: data.egg_groups, //array
       };
       setPokemon(pokemon);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error(error);
       setError(error.message);
     }
@@ -44,33 +58,36 @@ function Pokemon({ pokemons, source }) {
 
   function handleSearchChange(e, { value }) {
     setValue(value);
-    setLoading(true);
+    setIsLoading(true);
 
     setTimeout(() => {
       if (value.length < 1) {
-        setLoading(false);
+        setIsLoading(false);
         setResults([]);
         setValue('');
         return;
       } else if (value.length >= 3) {
-        const isMatch = (result) => result.title.startsWith(value);
-        setLoading(false);
+        const isMatch = (result) => result.title.startsWith(value.toLowerCase());
+        setIsLoading(false);
         setResults(_.filter(source, isMatch));
       } else {
-        setLoading(false);
+        setIsLoading(false);
         setResults([]);
       }
     }, 300);
   }
 
   const getEggGroupId = (url) => {
-    let str = url.substring(url.indexOf("group/") + 6); 
-    str = str.substring(0, str.indexOf("/"));
+    let str = url.substring(url.indexOf('group/') + 6);
+    str = str.substring(0, str.indexOf('/'));
     return str;
-  }
+  };
 
   return (
     <>
+      <Dimmer active={loading} inverted>
+        <Loader inverted>Loading</Loader>
+      </Dimmer>
       <Container textAlign="center" style={{ width: '50%' }}>
         <Search
           fluid
