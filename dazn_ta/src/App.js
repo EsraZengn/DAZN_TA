@@ -1,37 +1,25 @@
-import React, { useState } from 'react';
-import Films from './components/FilmsNew';
-import Actors from './components/Actors';
-import { Segment, Menu, Header, Container } from 'semantic-ui-react';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import React from 'react';
+import EggGroups from './components/EggGroups';
+import Pokemons from './components/Pokemons';
+import { Segment, Container } from 'semantic-ui-react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import EggGroup from './components/EggGroup';
 
 function App() {
-  const [menuState, setMenuState] = useState('Films');
-  const handleItemClick = (e, { name }) => setMenuState(name);
   return (
     <Router>
-      <Header as="h1">STAR WARS</Header>
-      <Segment inverted>
-        <Menu inverted pointing secondary>
-          <Menu.Item
-            as={Link}
-            to="/"
-            name="Films"
-            active={menuState === 'Films'}
-            onClick={handleItemClick}
-          />
-          <Menu.Item
-            as={Link}
-            to="/actors"
-            name="Actors"
-            active={menuState === 'Actors'}
-            onClick={handleItemClick}
-          />
-        </Menu>
+      <NavBar />
+      <Segment basic>
+        <Container>
+          <Switch>
+            <Route exact path="/" component={EggGroups} />
+            <Route exact path="/pokemons" component={Pokemons} />
+            <Route path="/egg_group/:id" component={EggGroup} />
+            <Redirect to="/" />
+          </Switch>
+        </Container>
       </Segment>
-      <Container>
-        <Route exact path="/" component={Films} />
-        <Route path="/actors" component={Actors} />
-      </Container>
     </Router>
   );
 }
