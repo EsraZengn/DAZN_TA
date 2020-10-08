@@ -1,25 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import EggGroups from './components/EggGroups';
+import Pokemons from './components/Pokemons';
+import { Segment, Container } from 'semantic-ui-react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import EggGroup from './components/EggGroup';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <NavBar />
+      <Segment basic>
+        <Container>
+          <Switch>
+            <Route exact path="/" component={EggGroups} />
+            <Route exact path="/pokemons" component={Pokemons} />
+            <Route path="/egg_group/:id" component={EggGroup} />
+            <Redirect to="/" />
+          </Switch>
+        </Container>
+      </Segment>
+    </Router>
   );
 }
 
